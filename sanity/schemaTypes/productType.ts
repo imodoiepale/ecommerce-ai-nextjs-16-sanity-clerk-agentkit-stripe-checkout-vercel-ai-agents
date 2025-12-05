@@ -108,11 +108,15 @@ export const productType = defineType({
       ],
     }),
     defineField({
-      name: "inStock",
-      type: "boolean",
+      name: "stock",
+      type: "number",
       group: "inventory",
-      initialValue: true,
-      description: "Is this product currently available?",
+      initialValue: 0,
+      description: "Number of items in stock",
+      validation: (rule) => [
+        rule.min(0).error("Stock cannot be negative"),
+        rule.integer().error("Stock must be a whole number"),
+      ],
     }),
     defineField({
       name: "featured",

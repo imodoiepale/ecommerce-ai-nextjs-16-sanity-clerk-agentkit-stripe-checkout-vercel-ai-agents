@@ -125,14 +125,15 @@ Create `components/ProductCard.tsx` - reusable across landing, search, AI result
 
 ## Phase 4: Shopping Cart System
 
-### 4.1 Cart Store (`lib/store/cart.ts`)
+### 4.1 Cart Store (Context Provider Pattern)
 
-Zustand store managing:
+Using Zustand with Context for Next.js SSR safety:
+- `lib/store/cart-store.ts` - Store factory using `createStore` from `zustand/vanilla`
+- `lib/store/cart-store-provider.tsx` - Context provider + convenience hooks
+- Wrap `app/(app)/layout.tsx` with `<CartStoreProvider>`
+- Persist to localStorage via `persist` middleware
 
-- Cart items (productId, quantity, price)
-- Add/remove/update quantity actions
-- Total calculation
-- Persist to localStorage
+@see https://zustand.docs.pmnd.rs/guides/nextjs
 
 ### 4.2 Cart UI Components
 
@@ -331,11 +332,10 @@ components/
 
 lib/
   store/
-    cart.ts               # Zustand cart store
-    useStore.ts           # SSR-safe store hook (Next.js hydration fix)
-    createSelectors.ts    # Auto-generating selectors utility
+    cart-store.ts            # Zustand store factory (vanilla)
+    cart-store-provider.tsx  # Context provider + hooks
   sanity/
-    queries.ts            # GROQ queries
+    queries.ts               # GROQ queries
 
 sanity/
   schemaTypes/
