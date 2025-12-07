@@ -9,7 +9,12 @@ import {
 } from "@sanity/sdk-react";
 import { Package, ShoppingCart, TrendingUp, Plus, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { StatCard, LowStockAlert, RecentOrders } from "@/components/admin";
+import {
+  StatCard,
+  LowStockAlert,
+  RecentOrders,
+  AIInsightsCard,
+} from "@/components/admin";
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -52,6 +57,9 @@ export default function AdminDashboard() {
           New Product
         </Button>
       </div>
+
+      {/* AI Insights */}
+      <AIInsightsCard />
 
       {/* Stats Grid */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

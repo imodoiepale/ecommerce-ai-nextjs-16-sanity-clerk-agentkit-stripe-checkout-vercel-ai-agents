@@ -63,18 +63,20 @@ export const ALL_PRODUCTS_QUERY = defineQuery(`*[
 }`);
 
 /**
- * Get featured products for homepage
+ * Get featured products for homepage carousel
  */
 export const FEATURED_PRODUCTS_QUERY = defineQuery(`*[
   _type == "product"
   && featured == true
   && stock > 0
-] | order(name asc) {
+] | order(name asc) [0...6] {
   _id,
   name,
   "slug": slug.current,
+  description,
   price,
-  "image": images[0]{
+  "images": images[]{
+    _key,
     asset->{
       _id,
       url

@@ -1,6 +1,7 @@
 export { StatCard } from "./StatCard";
 export { LowStockAlert } from "./LowStockAlert";
 export { RecentOrders } from "./RecentOrders";
+export { AIInsightsCard } from "./AIInsightsCard";
 export { StockInput } from "./StockInput";
 export { PriceInput } from "./PriceInput";
 export { FeaturedToggle } from "./FeaturedToggle";

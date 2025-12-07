@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { sanityFetch } from "@/sanity/lib/live";
 import {
+  FEATURED_PRODUCTS_QUERY,
   FILTER_PRODUCTS_BY_NAME_QUERY,
   FILTER_PRODUCTS_BY_PRICE_ASC_QUERY,
   FILTER_PRODUCTS_BY_PRICE_DESC_QUERY,
@@ -11,6 +12,8 @@ import { ProductGrid } from "@/components/app/ProductGrid";
 import { ProductGridSkeleton } from "@/components/app/ProductGridSkeleton";
 import { ProductFilters } from "@/components/app/ProductFilters";
 import { CategoryTiles } from "@/components/app/CategoryTiles";
+import { FeaturedCarousel } from "@/components/app/FeaturedCarousel";
+import { FeaturedCarouselSkeleton } from "@/components/app/FeaturedCarouselSkeleton";
 
 interface PageProps {
   searchParams: Promise<{
@@ -75,8 +78,20 @@ export default async function HomePage({ searchParams }: PageProps) {
     query: ALL_CATEGORIES_QUERY,
   });
 
+  // Fetch featured products for carousel
+  const { data: featuredProducts } = await sanityFetch({
+    query: FEATURED_PRODUCTS_QUERY,
+  });
+
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-zinc-900">
+      {/* Featured Products Carousel */}
+      {featuredProducts.length > 0 && (
+        <Suspense fallback={<FeaturedCarouselSkeleton />}>
+          <FeaturedCarousel products={featuredProducts} />
+        </Suspense>
+      )}
+
       {/* Page Banner */}
       <div className="border-b border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950">
         <div className="mx-auto max-w-7xl px-4 pt-8 sm:px-6 lg:px-8">

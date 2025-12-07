@@ -4,6 +4,8 @@ import { Suspense } from "react";
 import {
   useDocument,
   useEditDocument,
+  useApplyDocumentActions,
+  publishDocument,
   type DocumentHandle,
 } from "@sanity/sdk-react";
 import {
@@ -21,14 +23,21 @@ interface StatusSelectProps extends DocumentHandle {}
 function StatusSelectContent(handle: StatusSelectProps) {
   const { data: status } = useDocument({ ...handle, path: "status" });
   const editStatus = useEditDocument({ ...handle, path: "status" });
+  const apply = useApplyDocumentActions();
 
   const currentStatus = (status as string) ?? "pending";
   const statusConfig =
     ORDER_STATUS_CONFIG[currentStatus] ?? ORDER_STATUS_CONFIG.pending;
   const StatusIcon = statusConfig.icon;
 
+  const handleStatusChange = async (value: string) => {
+    editStatus(value);
+    // Auto-publish status changes so they take effect immediately
+    await apply(publishDocument(handle));
+  };
+
   return (
-    <Select value={currentStatus} onValueChange={(value) => editStatus(value)}>
+    <Select value={currentStatus} onValueChange={handleStatusChange}>
       <SelectTrigger className="w-[180px]">
         <SelectValue>
           <div className="flex items-center gap-2">

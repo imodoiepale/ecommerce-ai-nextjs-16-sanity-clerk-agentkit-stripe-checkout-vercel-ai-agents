@@ -392,19 +392,21 @@ export type ALL_PRODUCTS_QUERYResult = Array<{
   assemblyRequired: boolean | null;
 }>;
 // Variable: FEATURED_PRODUCTS_QUERY
-// Query: *[  _type == "product"  && featured == true  && stock > 0] | order(name asc) {  _id,  name,  "slug": slug.current,  price,  "image": images[0]{    asset->{      _id,      url    },    hotspot  },  category->{    _id,    title,    "slug": slug.current  },  stock}
+// Query: *[  _type == "product"  && featured == true  && stock > 0] | order(name asc) [0...6] {  _id,  name,  "slug": slug.current,  description,  price,  "images": images[]{    _key,    asset->{      _id,      url    },    hotspot  },  category->{    _id,    title,    "slug": slug.current  },  stock}
 export type FEATURED_PRODUCTS_QUERYResult = Array<{
   _id: string;
   name: string | null;
   slug: string | null;
+  description: string | null;
   price: number | null;
-  image: {
+  images: Array<{
+    _key: string;
     asset: {
       _id: string;
       url: string | null;
     } | null;
     hotspot: SanityImageHotspot | null;
-  } | null;
+  }> | null;
   category: {
     _id: string;
     title: string | null;
@@ -659,6 +661,65 @@ export type ORDER_COUNT_QUERYResult = number;
 // Variable: TOTAL_REVENUE_QUERY
 // Query: math::sum(*[  _type == "order"  && status in ["paid", "shipped", "delivered"]].total)
 export type TOTAL_REVENUE_QUERYResult = number;
+// Variable: ORDERS_LAST_7_DAYS_QUERY
+// Query: *[  _type == "order"  && createdAt >= $startDate  && !(_id in path("drafts.**"))] | order(createdAt desc) {  _id,  orderNumber,  total,  status,  createdAt,  "itemCount": count(items),  items[]{    quantity,    priceAtPurchase,    "productName": product->name,    "productId": product->_id  }}
+export type ORDERS_LAST_7_DAYS_QUERYResult = Array<{
+  _id: string;
+  orderNumber: string | null;
+  total: number | null;
+  status: "cancelled" | "delivered" | "paid" | "shipped" | null;
+  createdAt: string | null;
+  itemCount: number | null;
+  items: Array<{
+    quantity: number | null;
+    priceAtPurchase: number | null;
+    productName: string | null;
+    productId: string | null;
+  }> | null;
+}>;
+// Variable: ORDER_STATUS_DISTRIBUTION_QUERY
+// Query: {  "paid": count(*[_type == "order" && status == "paid" && !(_id in path("drafts.**"))]),  "shipped": count(*[_type == "order" && status == "shipped" && !(_id in path("drafts.**"))]),  "delivered": count(*[_type == "order" && status == "delivered" && !(_id in path("drafts.**"))]),  "cancelled": count(*[_type == "order" && status == "cancelled" && !(_id in path("drafts.**"))])}
+export type ORDER_STATUS_DISTRIBUTION_QUERYResult = {
+  paid: number;
+  shipped: number;
+  delivered: number;
+  cancelled: number;
+};
+// Variable: TOP_SELLING_PRODUCTS_QUERY
+// Query: *[  _type == "order"  && status in ["paid", "shipped", "delivered"]  && !(_id in path("drafts.**"))] {  items[]{    "productId": product->_id,    "productName": product->name,    "productPrice": product->price,    quantity  }}.items[]
+export type TOP_SELLING_PRODUCTS_QUERYResult = Array<{
+  productId: string | null;
+  productName: string | null;
+  productPrice: number | null;
+  quantity: number | null;
+} | null>;
+// Variable: PRODUCTS_INVENTORY_QUERY
+// Query: *[_type == "product"] {  _id,  name,  price,  stock,  "category": category->title}
+export type PRODUCTS_INVENTORY_QUERYResult = Array<{
+  _id: string;
+  name: string | null;
+  price: number | null;
+  stock: number | null;
+  category: string | null;
+}>;
+// Variable: UNFULFILLED_ORDERS_QUERY
+// Query: *[  _type == "order"  && status == "paid"  && !(_id in path("drafts.**"))] | order(createdAt asc) {  _id,  orderNumber,  total,  createdAt,  email,  "itemCount": count(items)}
+export type UNFULFILLED_ORDERS_QUERYResult = Array<{
+  _id: string;
+  orderNumber: string | null;
+  total: number | null;
+  createdAt: string | null;
+  email: string | null;
+  itemCount: number | null;
+}>;
+// Variable: REVENUE_BY_PERIOD_QUERY
+// Query: {  "currentPeriod": math::sum(*[    _type == "order"    && status in ["paid", "shipped", "delivered"]    && createdAt >= $currentStart    && !(_id in path("drafts.**"))  ].total),  "previousPeriod": math::sum(*[    _type == "order"    && status in ["paid", "shipped", "delivered"]    && createdAt >= $previousStart    && createdAt < $currentStart    && !(_id in path("drafts.**"))  ].total),  "currentOrderCount": count(*[    _type == "order"    && createdAt >= $currentStart    && !(_id in path("drafts.**"))  ]),  "previousOrderCount": count(*[    _type == "order"    && createdAt >= $previousStart    && createdAt < $currentStart    && !(_id in path("drafts.**"))  ])}
+export type REVENUE_BY_PERIOD_QUERYResult = {
+  currentPeriod: number;
+  previousPeriod: number;
+  currentOrderCount: number;
+  previousOrderCount: number;
+};
 
 // Query TypeMap
 import "@sanity/client";
@@ -673,7 +734,7 @@ declare module "@sanity/client" {
     "*[\n  _type == \"order\"\n] | order(createdAt desc) [0...$limit] {\n  _id,\n  orderNumber,\n  email,\n  total,\n  status,\n  createdAt\n}": RECENT_ORDERS_QUERYResult;
     "*[\n  _type == \"order\"\n  && stripePaymentId == $stripePaymentId\n][0]{ _id }": ORDER_BY_STRIPE_PAYMENT_ID_QUERYResult;
     "*[\n  _type == \"product\"\n] | order(name asc) {\n  _id,\n  name,\n  \"slug\": slug.current,\n  description,\n  price,\n  \"images\": images[]{\n    _key,\n    asset->{\n      _id,\n      url\n    },\n    hotspot\n  },\n  category->{\n    _id,\n    title,\n    \"slug\": slug.current\n  },\n  material,\n  color,\n  dimensions,\n  stock,\n  featured,\n  assemblyRequired\n}": ALL_PRODUCTS_QUERYResult;
-    "*[\n  _type == \"product\"\n  && featured == true\n  && stock > 0\n] | order(name asc) {\n  _id,\n  name,\n  \"slug\": slug.current,\n  price,\n  \"image\": images[0]{\n    asset->{\n      _id,\n      url\n    },\n    hotspot\n  },\n  category->{\n    _id,\n    title,\n    \"slug\": slug.current\n  },\n  stock\n}": FEATURED_PRODUCTS_QUERYResult;
+    "*[\n  _type == \"product\"\n  && featured == true\n  && stock > 0\n] | order(name asc) [0...6] {\n  _id,\n  name,\n  \"slug\": slug.current,\n  description,\n  price,\n  \"images\": images[]{\n    _key,\n    asset->{\n      _id,\n      url\n    },\n    hotspot\n  },\n  category->{\n    _id,\n    title,\n    \"slug\": slug.current\n  },\n  stock\n}": FEATURED_PRODUCTS_QUERYResult;
     "*[\n  _type == \"product\"\n  && category->slug.current == $categorySlug\n] | order(name asc) {\n  _id,\n  name,\n  \"slug\": slug.current,\n  price,\n  \"image\": images[0]{\n    asset->{\n      _id,\n      url\n    },\n    hotspot\n  },\n  category->{\n    _id,\n    title,\n    \"slug\": slug.current\n  },\n  material,\n  color,\n  stock\n}": PRODUCTS_BY_CATEGORY_QUERYResult;
     "*[\n  _type == \"product\"\n  && slug.current == $slug\n][0] {\n  _id,\n  name,\n  \"slug\": slug.current,\n  description,\n  price,\n  \"images\": images[]{\n    _key,\n    asset->{\n      _id,\n      url\n    },\n    hotspot\n  },\n  category->{\n    _id,\n    title,\n    \"slug\": slug.current\n  },\n  material,\n  color,\n  dimensions,\n  stock,\n  featured,\n  assemblyRequired\n}": PRODUCT_BY_SLUG_QUERYResult;
     "*[\n  _type == \"product\"\n  && (\n    name match $searchQuery + \"*\"\n    || description match $searchQuery + \"*\"\n  )\n] | score(\n  boost(name match $searchQuery + \"*\", 3),\n  boost(description match $searchQuery + \"*\", 1)\n) | order(_score desc) {\n  _id,\n  _score,\n  name,\n  \"slug\": slug.current,\n  price,\n  \"image\": images[0]{\n    asset->{\n      _id,\n      url\n    },\n    hotspot\n  },\n  category->{\n    _id,\n    title,\n    \"slug\": slug.current\n  },\n  material,\n  color,\n  stock\n}": SEARCH_PRODUCTS_QUERYResult;
@@ -688,5 +749,11 @@ declare module "@sanity/client" {
     "count(*[_type == \"product\"])": PRODUCT_COUNT_QUERYResult;
     "count(*[_type == \"order\"])": ORDER_COUNT_QUERYResult;
     "math::sum(*[\n  _type == \"order\"\n  && status in [\"paid\", \"shipped\", \"delivered\"]\n].total)": TOTAL_REVENUE_QUERYResult;
+    "*[\n  _type == \"order\"\n  && createdAt >= $startDate\n  && !(_id in path(\"drafts.**\"))\n] | order(createdAt desc) {\n  _id,\n  orderNumber,\n  total,\n  status,\n  createdAt,\n  \"itemCount\": count(items),\n  items[]{\n    quantity,\n    priceAtPurchase,\n    \"productName\": product->name,\n    \"productId\": product->_id\n  }\n}": ORDERS_LAST_7_DAYS_QUERYResult;
+    "{\n  \"paid\": count(*[_type == \"order\" && status == \"paid\" && !(_id in path(\"drafts.**\"))]),\n  \"shipped\": count(*[_type == \"order\" && status == \"shipped\" && !(_id in path(\"drafts.**\"))]),\n  \"delivered\": count(*[_type == \"order\" && status == \"delivered\" && !(_id in path(\"drafts.**\"))]),\n  \"cancelled\": count(*[_type == \"order\" && status == \"cancelled\" && !(_id in path(\"drafts.**\"))])\n}": ORDER_STATUS_DISTRIBUTION_QUERYResult;
+    "*[\n  _type == \"order\"\n  && status in [\"paid\", \"shipped\", \"delivered\"]\n  && !(_id in path(\"drafts.**\"))\n] {\n  items[]{\n    \"productId\": product->_id,\n    \"productName\": product->name,\n    \"productPrice\": product->price,\n    quantity\n  }\n}.items[]": TOP_SELLING_PRODUCTS_QUERYResult;
+    "*[_type == \"product\"] {\n  _id,\n  name,\n  price,\n  stock,\n  \"category\": category->title\n}": PRODUCTS_INVENTORY_QUERYResult;
+    "*[\n  _type == \"order\"\n  && status == \"paid\"\n  && !(_id in path(\"drafts.**\"))\n] | order(createdAt asc) {\n  _id,\n  orderNumber,\n  total,\n  createdAt,\n  email,\n  \"itemCount\": count(items)\n}": UNFULFILLED_ORDERS_QUERYResult;
+    "{\n  \"currentPeriod\": math::sum(*[\n    _type == \"order\"\n    && status in [\"paid\", \"shipped\", \"delivered\"]\n    && createdAt >= $currentStart\n    && !(_id in path(\"drafts.**\"))\n  ].total),\n  \"previousPeriod\": math::sum(*[\n    _type == \"order\"\n    && status in [\"paid\", \"shipped\", \"delivered\"]\n    && createdAt >= $previousStart\n    && createdAt < $currentStart\n    && !(_id in path(\"drafts.**\"))\n  ].total),\n  \"currentOrderCount\": count(*[\n    _type == \"order\"\n    && createdAt >= $currentStart\n    && !(_id in path(\"drafts.**\"))\n  ]),\n  \"previousOrderCount\": count(*[\n    _type == \"order\"\n    && createdAt >= $previousStart\n    && createdAt < $currentStart\n    && !(_id in path(\"drafts.**\"))\n  ])\n}": REVENUE_BY_PERIOD_QUERYResult;
   }
 }
