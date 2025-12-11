@@ -27,9 +27,12 @@
 
 ## 👇🏼 DO THIS Before You Get Started
 
-Before diving into the code, set up your accounts with our sponsors:
+Use THESE links to set up your accounts (It's a special affiliate link which lets us continue to do builds like this FREE for you!):
 
-| Service | Description | Link |
+- [**Get Started with Sanity →**](https://www.sanity.io/sonny?utm_source=youtube&utm_medium=video&utm_content=ai-ecommerce-platform)
+- [**Get Started with Clerk →**](https://go.clerk.com/uc48FAP)
+
+| Service | Description | ‼️ LINK TO USE ‼️ |
 |---------|-------------|------|
 | 🧡 **Sanity** | Headless CMS with real-time capabilities & App SDK | [**Get Started with Sanity →**](https://www.sanity.io/sonny?utm_source=youtube&utm_medium=video&utm_content=ai-ecommerce-platform) |
 | 💜 **Clerk** | Authentication with AgentKit for AI context | [**Get Started with Clerk →**](https://go.clerk.com/uc48FAP) |
@@ -63,20 +66,45 @@ And store owners get:
 
 ---
 
+## 🎯 What You'll Learn
+
+✅ **Next.js 16** with App Router & Server/Client Components + Server Actions!
+
+✅ **Clerk authentication** with AgentKit for AI-aware user context!
+
+✅ **Sanity CMS** with App SDK for real-time data mutations & live content updates!
+
+✅ **Vercel AI SDK** with AI Gateway for multi-provider LLM support (Claude, GPT, Cohere)!
+
+✅ **Stripe payments** with webhooks for secure checkout & order processing!
+
+✅ **shadcn/ui + Tailwind CSS v4** for beautiful, accessible UI components!
+
+✅ **Zustand state management** with localStorage persistence for cart!
+
+✅ **Mobile-responsive design** with modern layouts & dark mode!
+
+✅ **AI Shopping Assistant** with custom tools for product search & order tracking!
+
+✅ **AI Admin Dashboard** with Claude-powered insights, sales trends & recommendations!
+
+✅ **GROQ queries** with TypeGen for type-safe Sanity data fetching!
+
+✅ **Real-time UI updates** via Sanity Live — no polling required!
+
+✅ **Custom AI tools** scoped to authenticated users (orders only visible when signed in)!
+
+✅ **Webhook-driven order creation** with automatic stock management!
+
+✅ **Embedded Sanity Studio** for content management at `/studio`! + SO MUCH MORE!
+
+---
+
 ## 🚀 Before We Dive In - Join the PAPAFAM!
 
 **Want to build apps like this from scratch?**
 
 Join thousands of developers learning to build production-ready applications with the latest technologies.
-
-### What You'll Master
-
-- ✅ Next.js 14+ with App Router & Server Components
-- ✅ AI Integration with Vercel AI SDK
-- ✅ Authentication patterns with Clerk
-- ✅ Real-time content with Sanity
-- ✅ Payment processing with Stripe
-- ✅ Deployment & production best practices
 
 ### PAPAFAM Community Benefits
 
