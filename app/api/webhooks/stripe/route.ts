@@ -90,21 +90,25 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     const productIds = productIdsString.split(",");
     const quantities = quantitiesString.split(",").map(Number);
 
-    // Get line items from Stripe
-    const lineItems = await stripe.checkout.sessions.listLineItems(session.id);
+    // Fetch product prices from Sanity to calculate priceAtPurchase
+    const products = await client.fetch(
+      `*[_type == "product" && _id in $ids]{ _id, price }`,
+      { ids: productIds }
+    );
 
     // Build order items array
-    const orderItems = productIds.map((productId, index) => ({
-      _key: `item-${index}`,
-      product: {
-        _type: "reference" as const,
-        _ref: productId,
-      },
-      quantity: quantities[index],
-      priceAtPurchase: lineItems.data[index]?.amount_total
-        ? lineItems.data[index].amount_total / 100
-        : 0,
-    }));
+    const orderItems = productIds.map((productId, index) => {
+      const product = products.find((p: { _id: string }) => p._id === productId);
+      return {
+        _key: `item-${index}`,
+        product: {
+          _type: "reference" as const,
+          _ref: productId,
+        },
+        quantity: quantities[index],
+        priceAtPurchase: product?.price ?? 0,
+      };
+    });
 
     // Generate order number
     const orderNumber = `ORD-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
@@ -113,13 +117,13 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     const shippingAddress = session.customer_details?.address;
     const address = shippingAddress
       ? {
-          name: session.customer_details?.name ?? "",
-          line1: shippingAddress.line1 ?? "",
-          line2: shippingAddress.line2 ?? "",
-          city: shippingAddress.city ?? "",
-          postcode: shippingAddress.postal_code ?? "",
-          country: shippingAddress.country ?? "",
-        }
+        name: session.customer_details?.name ?? "",
+        line1: shippingAddress.line1 ?? "",
+        line2: shippingAddress.line2 ?? "",
+        city: shippingAddress.city ?? "",
+        postcode: shippingAddress.postal_code ?? "",
+        country: shippingAddress.country ?? "",
+      }
       : undefined;
 
     // Create order in Sanity with customer reference

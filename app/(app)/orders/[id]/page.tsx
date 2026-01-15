@@ -8,6 +8,7 @@ import { sanityFetch } from "@/sanity/lib/live";
 import { ORDER_BY_ID_QUERY } from "@/lib/sanity/queries/orders";
 import { getOrderStatus } from "@/lib/constants/orderStatus";
 import { formatPrice, formatDate } from "@/lib/utils";
+import type { ORDER_BY_ID_QUERYResult } from "@/sanity.types";
 
 export const metadata = {
   title: "Order Details | Furniture Shop",
@@ -32,7 +33,10 @@ export default async function OrderDetailPage({ params }: OrderPageProps) {
     notFound();
   }
 
-  const status = getOrderStatus(order.status);
+  // Type assertion after null check
+  const validOrder = order as NonNullable<typeof order>;
+
+  const status = getOrderStatus(validOrder.status);
   const StatusIcon = status.icon;
 
   return (
@@ -48,11 +52,11 @@ export default async function OrderDetailPage({ params }: OrderPageProps) {
         </Link>
         <div className="mt-4 flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">
-              Order {order.orderNumber}
+            <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-100">
+              Order #{validOrder.orderNumber}
             </h1>
             <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-              Placed on {formatDate(order.createdAt, "datetime")}
+              Placed on {formatDate(validOrder.createdAt)}
             </p>
           </div>
           <Badge className={`${status.color} flex items-center gap-1.5`}>
@@ -68,11 +72,11 @@ export default async function OrderDetailPage({ params }: OrderPageProps) {
           <div className="rounded-lg border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950">
             <div className="border-b border-zinc-200 px-6 py-4 dark:border-zinc-800">
               <h2 className="font-semibold text-zinc-900 dark:text-zinc-100">
-                Items ({order.items?.length ?? 0})
+                Items ({validOrder.items?.length ?? 0})
               </h2>
             </div>
             <div className="divide-y divide-zinc-200 dark:divide-zinc-800">
-              {order.items?.map((item) => (
+              {validOrder.items?.map((item) => (
                 <div key={item._key} className="flex gap-4 px-6 py-4">
                   {/* Image */}
                   <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-md bg-zinc-100 dark:bg-zinc-800">
@@ -138,7 +142,7 @@ export default async function OrderDetailPage({ params }: OrderPageProps) {
                   Subtotal
                 </span>
                 <span className="text-zinc-900 dark:text-zinc-100">
-                  {formatPrice(order.total)}
+                  {formatPrice(validOrder.total)}
                 </span>
               </div>
               <div className="border-t border-zinc-200 pt-3 dark:border-zinc-800">
@@ -147,7 +151,7 @@ export default async function OrderDetailPage({ params }: OrderPageProps) {
                     Total
                   </span>
                   <span className="text-zinc-900 dark:text-zinc-100">
-                    {formatPrice(order.total)}
+                    {formatPrice(validOrder.total)}
                   </span>
                 </div>
               </div>
@@ -155,7 +159,7 @@ export default async function OrderDetailPage({ params }: OrderPageProps) {
           </div>
 
           {/* Shipping Address */}
-          {order.address && (
+          {validOrder.address && (
             <div className="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950">
               <div className="flex items-center gap-2">
                 <MapPin className="h-5 w-5 text-zinc-400" />
@@ -164,15 +168,15 @@ export default async function OrderDetailPage({ params }: OrderPageProps) {
                 </h2>
               </div>
               <div className="mt-4 text-sm text-zinc-600 dark:text-zinc-400">
-                {order.address.name && <p>{order.address.name}</p>}
-                {order.address.line1 && <p>{order.address.line1}</p>}
-                {order.address.line2 && <p>{order.address.line2}</p>}
+                {validOrder.address.name && <p>{validOrder.address.name}</p>}
+                {validOrder.address.line1 && <p>{validOrder.address.line1}</p>}
+                {validOrder.address.line2 && <p>{validOrder.address.line2}</p>}
                 <p>
-                  {[order.address.city, order.address.postcode]
+                  {[validOrder.address.city, validOrder.address.postcode]
                     .filter(Boolean)
                     .join(", ")}
                 </p>
-                {order.address.country && <p>{order.address.country}</p>}
+                {validOrder.address.country && <p>{validOrder.address.country}</p>}
               </div>
             </div>
           )}
@@ -189,14 +193,14 @@ export default async function OrderDetailPage({ params }: OrderPageProps) {
               <div className="flex items-center justify-between">
                 <span className="text-xs font-light tracking-wide">Status</span>
                 <span className="text-sm font-medium capitalize text-green-600">
-                  {order.status}
+                  {validOrder.status}
                 </span>
               </div>
-              {order.email && (
+              {validOrder.email && (
                 <div className="flex items-center justify-between">
                   <p className="text-xs font-light tracking-wide">Email</p>
                   <p className="min-w-0 truncate text-sm text-zinc-900 dark:text-zinc-100">
-                    {order.email}
+                    {validOrder.email}
                   </p>
                 </div>
               )}
