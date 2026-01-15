@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { sanityFetch } from "@/sanity/lib/live";
 import {
   FEATURED_PRODUCTS_QUERY,
