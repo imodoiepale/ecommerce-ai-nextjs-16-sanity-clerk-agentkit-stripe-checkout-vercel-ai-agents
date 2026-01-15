@@ -141,12 +141,12 @@ export const PRODUCTS_BY_CATEGORY_QUERY = defineQuery(`*[
 }`);
 
 /**
- * Get single product by slug
+ * Get single product by slug or ID
  * Used on product detail page
  */
 export const PRODUCT_BY_SLUG_QUERY = defineQuery(`*[
   _type == "product"
-  && slug.current == $slug
+  && (slug.current == $slug || _id == $slug)
 ][0] {
   _id,
   name,

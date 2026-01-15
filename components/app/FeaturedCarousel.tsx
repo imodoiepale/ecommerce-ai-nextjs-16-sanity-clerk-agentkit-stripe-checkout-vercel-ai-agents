@@ -161,27 +161,16 @@ function FeaturedSlide({ product }: FeaturedSlideProps) {
         </p>
 
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-          {product.slug ? (
-            <Button
-              asChild
-              size="lg"
-              className="bg-white text-zinc-900 hover:bg-zinc-100"
-            >
-              <Link href={`/products/${product.slug}`}>
-                Shop Now
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
-          ) : (
-            <Button
-              size="lg"
-              className="bg-white text-zinc-900 hover:bg-zinc-100"
-              disabled
-            >
+          <Button
+            asChild
+            size="lg"
+            className="bg-white text-zinc-900 hover:bg-zinc-100"
+          >
+            <Link href={`/products/${product.slug || product._id}`}>
               Shop Now
               <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-          )}
+            </Link>
+          </Button>
         </div>
       </div>
     </div>
