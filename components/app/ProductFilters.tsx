@@ -119,11 +119,10 @@ export function ProductFilters({ categories }: ProductFiltersProps) {
   }) => (
     <div className="mb-2 flex items-center justify-between">
       <span
-        className={`block text-sm font-medium ${
-          isActive
+        className={`block text-sm font-medium ${isActive
             ? "text-zinc-900 dark:text-zinc-100"
             : "text-zinc-700 dark:text-zinc-300"
-        }`}
+          }`}
       >
         {children}
         {isActive && (
@@ -177,11 +176,10 @@ export function ProductFilters({ categories }: ProductFiltersProps) {
             name="search"
             placeholder="Search products..."
             defaultValue={currentSearch}
-            className={`flex-1 ${
-              isSearchActive
+            className={`flex-1 ${isSearchActive
                 ? "border-amber-500 ring-1 ring-amber-500 dark:border-amber-400 dark:ring-amber-400"
                 : ""
-            }`}
+              }`}
           />
           <Button type="submit" size="sm">
             Search
@@ -285,7 +283,7 @@ export function ProductFilters({ categories }: ProductFiltersProps) {
       {/* Price Range */}
       <div>
         <FilterLabel isActive={isPriceActive} filterKey="price">
-          Price Range: £{priceRange[0]} - £{priceRange[1]}
+          Price Range: KES {priceRange[0].toLocaleString('en-KE')} - KES {priceRange[1].toLocaleString('en-KE')}
         </FilterLabel>
         <Slider
           min={0}
@@ -315,11 +313,10 @@ export function ProductFilters({ categories }: ProductFiltersProps) {
             className="h-5 w-5 rounded border-zinc-300 text-amber-500 focus:ring-amber-500 dark:border-zinc-600 dark:bg-zinc-800"
           />
           <span
-            className={`text-sm font-medium ${
-              isInStockActive
+            className={`text-sm font-medium ${isInStockActive
                 ? "text-zinc-900 dark:text-zinc-100"
                 : "text-zinc-700 dark:text-zinc-300"
-            }`}
+              }`}
           >
             Show only in-stock
             {isInStockActive && (

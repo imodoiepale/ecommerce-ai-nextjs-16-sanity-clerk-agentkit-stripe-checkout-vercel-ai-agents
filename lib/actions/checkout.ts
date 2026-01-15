@@ -96,7 +96,7 @@ export async function createCheckoutSession(
     const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] =
       validatedItems.map(({ product, quantity }) => ({
         price_data: {
-          currency: "gbp",
+          currency: "kes",
           product_data: {
             name: product.name ?? "Product",
             images: product.image?.asset?.url ? [product.image.asset.url] : [],
@@ -140,6 +140,7 @@ export async function createCheckoutSession(
       customer: stripeCustomerId,
       shipping_address_collection: {
         allowed_countries: [
+          "KE", // Kenya
           "GB", // United Kingdom
           "US", // United States
           "CA", // Canada

@@ -131,7 +131,7 @@ export const productType = defineType({
     prepare({ title, subtitle, media, price }) {
       return {
         title,
-        subtitle: `${subtitle ? subtitle + " • " : ""}£${price ?? 0}`,
+        subtitle: `${subtitle ? subtitle + " • " : ""}KES ${(price ?? 0).toLocaleString('en-KE')}`,
         media,
       };
     },

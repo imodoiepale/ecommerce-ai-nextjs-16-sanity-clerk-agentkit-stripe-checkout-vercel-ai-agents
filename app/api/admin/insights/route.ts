@@ -163,7 +163,7 @@ export async function GET() {
     const avgOrderValue =
       recentOrders.length > 0
         ? recentOrders.reduce((sum, o) => sum + (o.total || 0), 0) /
-          recentOrders.length
+        recentOrders.length
         : 0;
 
     // Prepare data summary for AI
@@ -238,7 +238,7 @@ Guidelines:
 - Prioritize actionable insights
 - Keep highlights, alerts, and recommendations concise (under 100 characters each)
 - Focus on what the admin can do TODAY
-- Use £ for currency`,
+- Use KES for currency`,
       prompt: `Analyze this e-commerce store data and provide insights:
 
 ${JSON.stringify(dataSummary, null, 2)}
@@ -276,10 +276,10 @@ Generate insights in the required JSON format.`,
       // Fallback insights if parsing fails
       insights = {
         salesTrends: {
-          summary: `Revenue this week: £${currentRevenue.toFixed(2)} (${revenueChange > 0 ? "+" : ""}${revenueChange.toFixed(1)}% vs last week)`,
+          summary: `Revenue this week: KES ${currentRevenue.toLocaleString('en-KE', { minimumFractionDigits: 2 })} (${revenueChange > 0 ? "+" : ""}${revenueChange.toFixed(1)}% vs last week)`,
           highlights: [
             `${revenuePeriod.currentOrderCount || 0} orders this week`,
-            `Average order value: £${avgOrderValue.toFixed(2)}`,
+            `Average order value: KES ${avgOrderValue.toLocaleString('en-KE', { minimumFractionDigits: 2 })}`,
             topProducts[0]
               ? `Top seller: ${topProducts[0].name}`
               : "No sales data yet",
