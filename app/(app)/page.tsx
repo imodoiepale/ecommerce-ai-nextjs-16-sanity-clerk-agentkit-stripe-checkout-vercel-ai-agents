@@ -1,4 +1,3 @@
-import { Suspense } from "react";
 import { sanityFetch } from "@/sanity/lib/live";
 import {
   FEATURED_PRODUCTS_QUERY,
@@ -11,7 +10,6 @@ import { ALL_CATEGORIES_QUERY } from "@/lib/sanity/queries/categories";
 import { ProductSection } from "@/components/app/ProductSection";
 import { CategoryTiles } from "@/components/app/CategoryTiles";
 import { FeaturedCarousel } from "@/components/app/FeaturedCarousel";
-import { FeaturedCarouselSkeleton } from "@/components/app/FeaturedCarouselSkeleton";
 
 interface PageProps {
   searchParams: Promise<{
@@ -85,9 +83,7 @@ export default async function HomePage({ searchParams }: PageProps) {
     <div className="min-h-screen bg-zinc-50 dark:bg-zinc-900">
       {/* Featured Products Carousel */}
       {featuredProducts.length > 0 && (
-        <Suspense fallback={<FeaturedCarouselSkeleton />}>
-          <FeaturedCarousel products={featuredProducts} />
-        </Suspense>
+        <FeaturedCarousel products={featuredProducts} />
       )}
 
       {/* Page Banner */}

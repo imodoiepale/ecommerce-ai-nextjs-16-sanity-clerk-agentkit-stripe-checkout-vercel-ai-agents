@@ -165,8 +165,9 @@ function FeaturedSlide({ product }: FeaturedSlideProps) {
             asChild
             size="lg"
             className="bg-white text-zinc-900 hover:bg-zinc-100"
+            disabled={!product.slug}
           >
-            <Link href={`/products/${product.slug}`}>
+            <Link href={product.slug ? `/products/${product.slug}` : "#"}>
               Shop Now
               <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
